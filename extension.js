@@ -80,7 +80,7 @@ function get_api_data_with_cookie(url, cookie, callback) {
     session.queue_message(message, (sess, msg) => {
         if (msg.status_code === 200) {
             try {
-                callback(null, msg.response_body);
+                callback(null, msg.response_body.data);
             } catch (e) {
                 callback(new Error(`Failed to parse JSON: ${e.message}`));
             }
