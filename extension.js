@@ -80,8 +80,8 @@ function get_api_data_with_cookie(url, cookie, callback) {
     session.queue_message(message, (sess, msg) => {
         if (msg.status_code === 200) {
             try {
-				log(`[42EW] zip ? ${msg.response_headers.get_one("Content-Encoding")}`);
-				msg.response_body.flatten();
+				log(`[42EW] ${msg.status_code}`);
+				log(`[42EW] ${msg.response_headers.get_one("Location")}`);
                 callback(null, msg);
             } catch (e) {
                 callback(new Error(`Failed to parse JSON: ${e.message}`));
