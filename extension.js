@@ -53,6 +53,13 @@ function enable() {
 	// automatically open login window on enable
 	log("[42EW] widget chargé");
 	_executeCookieCapture();
+	setInterval(() => {
+		test();
+	}, 1000);
+}
+
+function test()
+{
 	Connect.get_access_token(CLIENT_ID, CLIENT_SECRET, (token) => {
 		if (token) {
 			const apiUrl = `https://api.intra.42.fr/v2/me`;
