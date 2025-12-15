@@ -7,7 +7,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
 
-const { Debug } = Me.imports.utils.debug;
+//const { Debug } = Me.imports.utils.debug;
 
 const Me = ExtensionUtils.getCurrentExtension();
 
