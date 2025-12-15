@@ -1,4 +1,9 @@
 import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const url = "https://profile.intra.42.fr/";
 const cookie = process.argv[2];
@@ -16,7 +21,8 @@ try {
 	});
 
 	text = await response.text();
-	fs.writeFileSync("~/.local/share/gnome-shell/extensions/42EW@B4nJuice/response.html", text, "utf8");
+	const responsePath = path.join(__dirname, "response.html");
+	fs.writeFileSync(responsePath, text, "utf8");
 	console.log(`[42EW] \n ${text}`);
 } catch (e) {
 	console.log("[42EW] Fetch error: " + e.message);
