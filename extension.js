@@ -76,7 +76,8 @@ function get_api_data_with_cookie(url, cookie, callback) {
     if (cookie) {
         message.request_headers.append('Cookie', `_intra_42_session_production=${cookie}`);
 		message.request_headers.append("User-Agent", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:146.0) Gecko/20100101 Firefox/146.0");
-    }
+		message.request_headers.replace("Accept-Encoding", "identity");
+	}
 
     session.queue_message(message, (sess, msg) => {
         if (msg.status_code === 200) {
