@@ -67,6 +67,101 @@ function enable() {
 	}, 5000);
 }
 
+function get_api_data_with_cookie(url, cookie, callback) {
+    let session = new Soup.Session();
+    let message = Soup.Message.new('GET', url);
+
+    if (cookie) {
+        message.request_headers.append('Cookie', cookie);
+    }
+
+    session.queue_message(message, (sess, msg) => {
+        if (msg.status_code === 200) {
+            try {
+                let data = JSON.parse(msg.response_body.data);
+                callback(null, data);
+            } catch (e) {
+                callback(new Error(`Failed to parse JSON: ${e.message}`));
+            }
+        } else if (msg.status_code === 401) {
+            callback(new Error('Unauthorized: invalid/expired cookie'));
+        } else {
+            callback(new Error(`HTTP error ${msg.status_code}: ${msg.reason_phrase}`));
+        }
+    });
+}
+
+function _getCookieFilePath() {
+    return GLib.build_filenamev([Me.path, 'utils', '.intra42_cookies.json']);
+}
+
+function _readCookieFile() {
+    const path = _getCookieFilePath();
+    const file = Gio.File.new_for_path(path);
+    if (!file.query_exists(null)) return null;
+    try {
+        let [ok, contents] = file.load_contents(null);
+        if (!ok) return null;
+        return imports.byteArray.toString(contents);
+    } catch (e) {
+        log(`[42EW] failed to read cookie file: ${e}`);
+        return null;
+    }
+}
+
+function _parseCookieFromFileContent(content) {
+    // Supporte JSON export (array d'objets) ou chaîne brute
+    try {
+        const obj = JSON.parse(content);
+        // JSON export attendu : { cookies: [...] } ou array [...]
+        let arr = Array.isArray(obj) ? obj : obj.cookies || [];
+        if (!Array.isArray(arr)) return null;
+        // construire "name=value; name2=value2"
+        const parts = arr.map(c => {
+            if (c.name && c.value) return `${c.name}=${c.value}`;
+            // parfois cookie field different, fallback:
+            return null;
+        }).filter(Boolean);
+        if (parts.length) return parts.join('; ');
+        return null;
+    } catch (e) {
+        // not json => assume raw cookie string
+        return content.trim() || null;
+    }
+}
+
+function _checkCookieValidity(cookieValue, callback) {
+    // Request vers un endpoint web qui accepte les cookies de session
+    const url = `https://translate.intra.42.fr/users/${username}/locations_stats.json`;
+    let session = new Soup.Session();
+    let message = Soup.Message.new('GET', url);
+    message.request_headers.append('Cookie', cookieValue);
+
+    session.queue_message(message, (sess, msg) => {
+        if (msg.status_code === 200) {
+            callback(true);
+        } else {
+            callback(false);
+        }
+    });
+}
+
+function _useCookie(cookieValue) {
+    _intraCookie = cookieValue;
+    _label.set_text('Connecté');
+    _label.set_style('color: #10b981; font-weight: 600;');
+
+    // exemple : récupérer /v2/me via cookie (ou utiliser un endpoint html autorisé)
+    get_api_data_with_cookie('https://api.intra.42.fr/v2/me', cookieValue, (err, data) => {
+        if (!err && data) {
+            log(`[42EW] user via cookie: ${JSON.stringify(data)}`);
+        } else {
+            // si l'API v2 nécessite OAuth, la requête peut échouer -> utiliser endpoints web avec cookie
+            log(`[42EW] get_api_data_with_cookie error: ${err && err.message}`);
+        }
+    });
+}
+
 function _validateAndLoginIfNeeded() {
     _label.set_text('Vérification cookie...');
     _label.set_style('color: #f59e0b; font-weight: 600;');
