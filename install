@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+# portable strict mode: always set -e and -u; enable pipefail only when running under bash
+set -eu
+if [ -n "${BASH_VERSION-}" ]; then
+  set -o pipefail
+else
+  echo "Note: running under POSIX sh; 'pipefail' not available. For stricter behavior run with: bash $0"
+fi
 
 REPO_URL="https://github.com/B4nJuice/42EW-42-evaluation-widget-.git"
 CLONE_DIR="$HOME/42EW@B4nJuice"
