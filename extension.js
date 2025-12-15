@@ -86,6 +86,9 @@ function get_api_data_with_cookie(url, cookie, callback) {
 				log(`[42EW] Content-Length: ${msg.response_headers.get_one("Content-Length")}`);
 				log(`[42EW] Transfer-Encoding: ${msg.response_headers.get_one("Transfer-Encoding")}`);
 
+				let i = 0;
+				let headers = [];
+
 				while (true) {
 					let name = msg.response_headers.get_nth(i, null);
 					if (!name) break;  // plus de headers
