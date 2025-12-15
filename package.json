@@ -1,0 +1,20 @@
+{
+  "name": "42ew",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/B4nJuice/42EW-42-evaluation-widget-#readme",
+  "bugs": {
+    "url": "https://github.com/B4nJuice/42EW-42-evaluation-widget-/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/B4nJuice/42EW-42-evaluation-widget-.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "fetch.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

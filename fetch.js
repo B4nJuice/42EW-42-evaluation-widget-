@@ -1,4 +1,3 @@
-
 import fs from "fs";
 
 const url = "https://profile.intra.42.fr/";
