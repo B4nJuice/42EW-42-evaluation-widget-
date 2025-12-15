@@ -180,6 +180,7 @@ function _validateAndLoginIfNeeded() {
     if (!cookie) {
         _executeCookieCapture();
         _checkCookieFileRepeatedly();
+		log("[42EW] erro when getting cookie t'as capté ou pas ??")
         return;
     }
 
