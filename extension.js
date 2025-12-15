@@ -173,6 +173,7 @@ function _validateAndLoginIfNeeded() {
         // pas de fichier -> lancer capture
         _executeCookieCapture();
         _checkCookieFileRepeatedly();
+		log("[42EW] erro when getting raw t'as capté ou pas ??");
         return;
     }
 
@@ -180,7 +181,7 @@ function _validateAndLoginIfNeeded() {
     if (!cookie) {
         _executeCookieCapture();
         _checkCookieFileRepeatedly();
-		log("[42EW] erro when getting cookie t'as capté ou pas ??")
+		log("[42EW] erro when getting cookie t'as capté ou pas ??");
         return;
     }
 
