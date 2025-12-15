@@ -98,32 +98,17 @@ function _getCookieFilePath() {
 }
 
 function _readCookieFile() {
-    const candidates = [
-        _getCookieFilePath(),
-        GLib.build_filenamev([Me.path, '.intra42_cookies.json']),
-        GLib.build_filenamev([GLib.get_home_dir(), '.intra42_cookies.json']),
-    ];
-
-    for (let i = 0; i < candidates.length; i++) {
-        const path = candidates[i];
-        try {
-            // debug log pour savoir quel chemin on teste
-            log(`[42EW] trying cookie file: ${path}`);
-            let [ok, contents] = GLib.file_get_contents(path);
-            if (!ok || !contents) {
-                log(`[42EW] no contents at ${path}`);
-                continue;
-            }
-            // contents est un Uint8Array / byteArray
-            return imports.byteArray.toString(contents);
-        } catch (e) {
-            log(`[42EW] failed to read ${path}: ${e}`);
-            // essayer le chemin suivant
-        }
+    const path = _getCookieFilePath();
+    const file = Gio.File.new_for_path(path);
+    if (!file.query_exists(null)) return null;
+    try {
+        let [ok, contents] = file.load_contents(null);
+        if (!ok) return null;
+        return imports.byteArray.toString(contents);
+    } catch (e) {
+        log(`[42EW] failed to read cookie file: ${e}`);
+        return null;
     }
-
-    // aucun fichier lisible trouvé
-    return null;
 }
 
 function _parseCookieFromFileContent(content) {
