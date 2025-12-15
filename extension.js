@@ -74,7 +74,7 @@ function get_api_data_with_cookie(url, cookie, callback) {
     let message = Soup.Message.new('GET', url);
 
     if (cookie) {
-        message.request_headers.append('Cookie', cookie);
+        message.request_headers.append('Cookie', `_intra_42_session_production=${cookie}`);
     }
 
     session.queue_message(message, (sess, msg) => {
