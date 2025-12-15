@@ -81,6 +81,19 @@ function get_api_data_with_cookie(url, cookie, callback) {
     session.queue_message(message, (sess, msg) => {
         if (msg.status_code === 200) {
             try {
+				log(`[42EW] STATUS: ${msg.status_code}`);
+				log(`[42EW] Content-Type: ${msg.response_headers.get_one("Content-Type")}`);
+				log(`[42EW] Content-Length: ${msg.response_headers.get_one("Content-Length")}`);
+				log(`[42EW] Transfer-Encoding: ${msg.response_headers.get_one("Transfer-Encoding")}`);
+
+				while (true) {
+					let name = msg.response_headers.get_nth(i, null);
+					if (!name) break;  // plus de headers
+					let value = msg.response_headers.get_one(name);
+					headers.push(`${name}: ${value}`);
+					i++;
+				}
+				log("[42EW] All headers:\n" + headers.join("\n"));
                 callback(null, msg);
             } catch (e) {
                 callback(new Error(`Failed to parse JSON: ${e.message}`));
@@ -248,13 +261,7 @@ function test() {
     // si on a déjà un cookie de session, privilégier la requête avec cookie
     if (_intraCookie) {
         get_api_data_with_cookie(`https://intra.42.fr/users/${username}`, _intraCookie, (err, data) => {
-            if (!err && data) 
-				{
-					for (let i = 0; i < data.response_headers.length; i++) {
-						let name = data.response_headers.get_nth(i, null);
-						let value = data.response_headers.get_one(name);
-						log(`[42EW] [HEADER] ${name}: ${value}`);
-					}
+            if (!err && data) {
                 log(`[42EW] user via cookie: ${JSON.stringify(data.response_body)}`);
                 log(`[42EW] user via cookie: ${data.response_body.data}`);
                 try {
