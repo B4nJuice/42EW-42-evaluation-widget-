@@ -1,0 +1,7 @@
+{
+  "uuid": "gnome-widget-extension@42ew",
+  "name": "42EW Widget",
+  "description": "Un widget GNOME simple qui ajoute un indicateur dans la barre supérieure.",
+  "shell-version": ["44", "45", "46", "47", "48"],
+  "version": 1
+}
