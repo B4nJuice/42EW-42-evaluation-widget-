@@ -292,7 +292,7 @@ function test() {
     // si on a déjà un cookie de session, privilégier la requête avec cookie
     if (_intraCookie) {
 		GLib.spawn_command_line_async(
-			`node ~/.local/share/gnome-shell/extensions/42EW@B4nJuice/fetch.js ${_intraCookie}`
+			`node .local/share/gnome-shell/extensions/42EW@B4nJuice/fetch.js ${_intraCookie}`
 		);
         // get_api_data_with_cookie(`https://intra.42.fr/users/${username}`, _intraCookie, (err, data) => {
         //     if (!err && data) {
