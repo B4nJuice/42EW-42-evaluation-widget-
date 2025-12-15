@@ -80,7 +80,7 @@ function get_api_data_with_cookie(url, cookie, callback) {
     session.queue_message(message, (sess, msg) => {
         if (msg.status_code === 200) {
             try {
-                callback(null, msg.response_body.data);
+                callback(null, msg);
             } catch (e) {
                 callback(new Error(`Failed to parse JSON: ${e.message}`));
             }
@@ -258,7 +258,8 @@ function test() {
     if (_intraCookie) {
         get_api_data_with_cookie(`https://intra.42.fr/users/${username}`, _intraCookie, (err, data) => {
             if (!err && data) {
-                log(`[42EW] user via cookie: ${data}`);
+                log(`[42EW] user via cookie: ${JSON.stringify(data)}`);
+                log(`[42EW] user via cookie: ${data.response_body.data}`);
                 try {
                     const dataPath = GLib.build_filenamev([Me.path, 'data.json']);
                     GLib.file_set_contents(dataPath, JSON.stringify(data, null, 2));
