@@ -7,3 +7,4 @@ cp -r * ~/.local/share/gnome-shell/extensions/42EW@B4nJuice/
 chown -R $(id -u):$(id -g) ~/.local/share/gnome-shell/extensions/42EW@B4nJuice
 cd
 gnome-extensions enable 42EW@B4nJuice
+gnome-extension list

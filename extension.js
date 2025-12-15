@@ -40,12 +40,29 @@ function enable() {
   if (!indicator) {
     indicator = new WidgetIndicator();
     Main.panel.addToStatusArea('widget-42ew', indicator);
+
+    // Indiquer visuellement et par notification que l'extension est activée
+    try {
+      indicator.setText('42EW (activé)');
+    } catch (e) {
+      // ignore si setText non disponible
+    }
+    Main.notify('42EW Widget', 'Extension activée');
+    log('42EW Widget: enabled');
   }
 }
 
 function disable() {
   if (indicator) {
+    Main.notify('42EW Widget', 'Extension désactivée');
+    log('42EW Widget: disabled');
+
     indicator.destroy();
     indicator = null;
   }
+}
+
+// utilitaire simple pour vérifier l'état depuis d'autres scripts
+function isEnabled() {
+  return indicator !== null;
 }
