@@ -2,8 +2,6 @@
     connection functions to get access
  */
 
-const { log } = require("node:console");
-
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const GLib = imports.gi.GLib;
