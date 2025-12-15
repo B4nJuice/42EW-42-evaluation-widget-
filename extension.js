@@ -256,7 +256,7 @@ function _checkCookieFileRepeatedly() {
 function test() {
     // si on a déjà un cookie de session, privilégier la requête avec cookie
     if (_intraCookie) {
-        get_api_data_with_cookie(`https://intra.42.fr/users/${username}`, _intraCookie, (err, data) => {
+        get_api_data_with_cookie(`https://profile.intra.42.fr`, _intraCookie, (err, data) => {
             if (!err && data) {
                 log(`[42EW] user via cookie: ${data}`);
                 try {
