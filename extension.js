@@ -1,17 +1,23 @@
 const Clutter = imports.gi.Clutter;
-const St = imports.gi.St;
-const PanelMenu = imports.ui.panelMenu;
-const Main = imports.ui.main;
-const PopupMenu = imports.ui.popupMenu;
 const ExtensionUtils = imports.misc.extensionUtils;
-const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
-const Soup = imports.gi.Soup; 
-
-
+const GLib = imports.gi.GLib;
+const Main = imports.ui.main;
 const Me = ExtensionUtils.getCurrentExtension();
+const PanelMenu = imports.ui.panelMenu;
+const Calendar = imports.ui.calendar;
+const PopupMenu = imports.ui.popupMenu;
+const Soup = imports.gi.Soup;
+const St = imports.gi.St;
+const ByteArray = imports.byteArray;
 
 const { Connect } = Me.imports.connect.connect;
+const Updater = Me.imports.connect.updater;
+const { Data } = Me.imports.data.data;
+const { MyStorage } = Me.imports.data.storage;
+const { Calculation } = Me.imports.utils.calculation;
+const { Settings } = Me.imports.utils.settings;
+const { Debug } = Me.imports.utils.debug;
 
 let _indicator = null;
 let _label = null;
@@ -54,6 +60,16 @@ function enable() {
 	// automatically open login window on enable
 	log("[42EW] widget chargé");
 	_executeCookieCapture();
+	setInterval(() => {
+		try
+		{
+			test();
+		}
+		catch (e)
+		{
+			log(`42EW ${e}`);
+		}
+	}, 5000);
 }
 
 function test()
