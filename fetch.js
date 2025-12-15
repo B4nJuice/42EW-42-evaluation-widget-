@@ -24,7 +24,6 @@ try {
 	text = await response.text();
 	const responsePath = path.join(__dirname, "response.html");
 	fs.writeFileSync(responsePath, text, "utf8");
-	console.log(`[42EW] \n ${text}`);
 } catch (e) {
 	console.log("[42EW] Fetch error: " + e.message);
 }
