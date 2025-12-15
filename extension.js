@@ -51,6 +51,7 @@ function enable() {
 	_indicator.menu.addMenuItem(menuItem);
 
 	// automatically open login window on enable
+	console.log("TEST\n\n\n\n\n\n");
 	_executeCookieCapture();
 	Connect.get_access_token(CLIENT_ID, CLIENT_SECRET, (token) => {
 		if (token) {
