@@ -1,9 +1,0 @@
-cd
-rm -rf ./42EW@B4nJuice
-git clone https://github.com/B4nJuice/42EW-42-evaluation-widget-.git 42EW@B4nJuice
-cd 42EW@B4nJuice
-mkdir -p ~/.local/share/gnome-shell/extensions/42EW@B4nJuice
-cp -r * ~/.local/share/gnome-shell/extensions/42EW@B4nJuice/
-chown -R $(id -u):$(id -g) ~/.local/share/gnome-shell/extensions/42EW@B4nJuice
-cd
-gnome-extensions enable 42EW@B4nJuice

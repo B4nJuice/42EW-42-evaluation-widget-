@@ -1,9 +1,12 @@
 {
   "uuid": "42EW@B4nJuice",
-  "name": "42 Evaluation widget",
-  "description": "Check your next evaluations",
-  "shell-version": ["40", "41", "42", "43", "44", "45", "46", "47", "48"],
-  "stylesheet": "styles.css",
-  "version": 1,
-  "settings-schema": "org.gnome.shell.extensions.42EW"
+  "name": "42EW",
+  "description": "Create GNOME Shell extensions in seconds",
+  "shell-version": [
+    "45",
+    "46",
+    "47",
+    "48",
+    "49"
+  ]
 }
