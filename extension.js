@@ -85,7 +85,7 @@ function get_api_data_with_cookie(url, cookie, callback) {
 				log(`[42EW] Content-Type: ${msg.response_headers.get_one("Content-Type")}`);
 				log(`[42EW] Content-Length: ${msg.response_headers.get_one("Content-Length")}`);
 				log(`[42EW] Transfer-Encoding: ${msg.response_headers.get_one("Transfer-Encoding")}`);
-				log(`[42EW] header response: ${JSON.stringify(msg.response_headers)}`);
+				log(`[42EW] header response: ${JSON.parse(msg.response_headers)}`);
 
                 callback(null, msg);
             } catch (e) {
