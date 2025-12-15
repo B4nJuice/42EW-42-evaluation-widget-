@@ -75,8 +75,7 @@ function get_api_data_with_cookie(url, cookie, callback) {
 
     if (cookie) {
         message.request_headers.append('Cookie', `_intra_42_session_production=${cookie}`);
-		message.request_headers.append("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36");
-
+		message.request_headers.append("User-Agent", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:146.0) Gecko/20100101 Firefox/146.0");
     }
 
     session.queue_message(message, (sess, msg) => {
@@ -173,16 +172,6 @@ function _useCookie(cookieValue) {
     _intraCookie = cookieValue;
     _label.set_text('Connecté');
     _label.set_style('color: #10b981; font-weight: 600;');
-
-    // exemple : récupérer /v2/me via cookie (ou utiliser un endpoint html autorisé)
-    get_api_data_with_cookie('https://api.intra.42.fr/v2/me', cookieValue, (err, data) => {
-        if (!err && data) {
-            log(`[42EW] user via cookie: ${JSON.stringify(data)}`);
-        } else {
-            // si l'API v2 nécessite OAuth, la requête peut échouer -> utiliser endpoints web avec cookie
-            log(`[42EW] get_api_data_with_cookie error: ${err && err.message}`);
-        }
-    });
 }
 
 function _validateAndLoginIfNeeded() {
