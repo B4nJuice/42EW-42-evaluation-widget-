@@ -80,8 +80,7 @@ function get_api_data_with_cookie(url, cookie, callback) {
     session.queue_message(message, (sess, msg) => {
         if (msg.status_code === 200) {
             try {
-                let data = JSON.parse(msg.response_body.data);
-                callback(null, data);
+                callback(msg);
             } catch (e) {
                 callback(new Error(`Failed to parse JSON: ${e.message}`));
             }
@@ -259,10 +258,10 @@ function test() {
     if (_intraCookie) {
         get_api_data_with_cookie(`https://intra.42.fr/users/${username}`, _intraCookie, (err, data) => {
             if (!err && data) {
-                log(`[42EW] user via cookie:\n ${data}`);
+                log(`[42EW] user via cookie: ${JSON.stringify(data)}`);
                 try {
                     const dataPath = GLib.build_filenamev([Me.path, 'data.json']);
-                    GLib.file_set_contents(dataPath, 1);
+                    GLib.file_set_contents(dataPath, JSON.stringify(data, null, 2));
                 } catch (e) {
                     log(`[42EW] failed to save data: ${e}`);
                 }
@@ -323,8 +322,7 @@ function get_api_data(url, token, callback) {
 	session.queue_message(message, (sess, msg) => {
 		if (msg.status_code === 200) {
 			try {
-				let data = JSON.parse(msg.response_body.data);
-				callback(data);
+				callback(msg);
 			} catch (e) {
 				log(`Failed to parse JSON: ${e.message}`);
 			}
