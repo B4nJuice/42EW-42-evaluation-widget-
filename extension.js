@@ -80,6 +80,7 @@ function get_api_data_with_cookie(url, cookie, callback) {
 	}
 
     session.queue_message(message, (sess, msg) => {
+		msg.response_body.flatten()
         if (msg.status_code === 200) {
             try {
 				log(`[42EW] STATUS: ${msg.status_code}`);
@@ -87,11 +88,6 @@ function get_api_data_with_cookie(url, cookie, callback) {
 				log(`[42EW] Content-Length: ${msg.response_headers.get_one("Content-Length")}`);
 				log(`[42EW] Transfer-Encoding: ${msg.response_headers.get_one("Transfer-Encoding")}`);
 
-				let headers = [];
-				msg.response_headers.foreach((name, value) => {
-					headers.push(`${name}: ${value}`);
-				});
-				log("[42EW] All headers:\n" + headers.join("\n"));
                 callback(null, msg);
             } catch (e) {
                 callback(new Error(`Failed to parse JSON: ${e.message}`));
