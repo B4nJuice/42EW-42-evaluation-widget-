@@ -101,10 +101,14 @@ function _readCookieFile() {
     const path = _getCookieFilePath();
     log(`[42EW] _readCookieFile: trying ${path}`);
     try {
-        // vérifie l'existence et le mode/owner pour debug
         try {
-            const st = GLib.stat(path);
-            log(`[42EW] file stat: size=${st.size}, mode=${st.mode.toString(8)}, uid=${st.uid}`);
+            const gfile = Gio.File.new_for_path(path);
+            const info = gfile.query_info('standard::size,unix::mode,unix::uid', Gio.FileQueryInfoFlags.NONE, null);
+            const size = info.get_size();
+            let mode = null, uid = null;
+            try { mode = info.get_attribute_uint32('unix::mode'); } catch(e) { mode = null; }
+            try { uid = info.get_attribute_uint32('unix::uid'); } catch(e) { uid = null; }
+            log(`[42EW] file info: size=${size}, mode=${mode !== null ? mode.toString(8) : 'n/a'}, uid=${uid !== null ? uid : 'n/a'}`);
         } catch (e) {
             log(`[42EW] stat failed: ${e}`);
         }
@@ -129,22 +133,17 @@ function _readCookieFile() {
 }
 
 function _parseCookieFromFileContent(content) {
-    // Supporte JSON export (array d'objets) ou chaîne brute
     try {
         const obj = JSON.parse(content);
-        // JSON export attendu : { cookies: [...] } ou array [...]
         let arr = Array.isArray(obj) ? obj : obj.cookies || [];
         if (!Array.isArray(arr)) return null;
-        // construire "name=value; name2=value2"
         const parts = arr.map(c => {
             if (c.name && c.value) return `${c.name}=${c.value}`;
-            // parfois cookie field different, fallback:
             return null;
         }).filter(Boolean);
         if (parts.length) return parts.join('; ');
         return null;
     } catch (e) {
-        // not json => assume raw cookie string
         return content.trim() || null;
     }
 }
