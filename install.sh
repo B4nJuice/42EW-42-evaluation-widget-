@@ -27,6 +27,13 @@ git clone --depth=1 "$REPO_URL" "$TMP_DIR" || { echo -e "${RED}Git clone failed$
 echo -e "${YELLOW}Checking Python dependencies (optional)...${NC}"
 pip3 install --user selenium psutil webdriver-manager || echo -e "${YELLOW}Warning: python deps installation failed (continue)${NC}"
 
+echo -e "${YELLOW}Checking Node.js/npm and installing JS dependencies (optional)...${NC}"
+if command -v npm >/dev/null 2>&1; then
+  (cd "$TMP_DIR" && npm install --no-audit --no-fund) || echo -e "${YELLOW}Warning: npm install failed (continue)${NC}"
+else
+  echo -e "${YELLOW}Note: 'npm' not found. Skipping Node.js dependency installation.${NC}"
+fi
+
 echo -e "${YELLOW}Cleaning old $INSTALL_DIR...${NC}"
 rm -rf "$INSTALL_DIR"
 mkdir -p "$INSTALL_DIR"
