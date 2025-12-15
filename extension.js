@@ -82,7 +82,7 @@ function get_api_data_with_cookie(url, cookie, callback) {
         if (msg.status_code === 200) {
             try {
 				log(`[42EW] STATUS: ${msg.status_code}`);
-				log(`[42EW] Content-Type: ${response_headers.get_one("Content-Type")}`);
+				log(`[42EW] Content-Type: ${msg.response_headers.get_one("Content-Type")}`);
 				log(`[42EW] Content-Length: ${msg.response_headers.get_one("Content-Length")}`);
 				log(`[42EW] Transfer-Encoding: ${msg.response_headers.get_one("Transfer-Encoding")}`);
 				log(`[42EW] header response: ${JSON.stringify(msg.response_headers)}`);
