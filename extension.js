@@ -234,7 +234,8 @@ function _updateLabelFromEvaluations() {
         for (let i = 0; i < arr.length; i++) {
             const e = arr[i];
             if (!e || !e.date) continue;
-            const t = Date.parse(e.date);
+            // Remplacement: utilisation de _parseEvaluationDate au lieu de Date.parse direct
+            const t = _parseEvaluationDate(e.date);
             if (isNaN(t)) continue;
             if (t < minTime) {
                 minTime = t;
@@ -263,6 +264,32 @@ function _updateLabelFromEvaluations() {
         _label.set_text('no evaluation');
         _label.set_style('color: #ffffff; font-weight: 600;');
     }
+}
+
+function _parseEvaluationDate(dateStr) {
+    if (!dateStr) return NaN;
+    let s = String(dateStr).trim();
+
+    if (/^\d+$/.test(s)) return Number(s);
+
+    let t = Date.parse(s);
+    if (!isNaN(t)) return t;
+
+    const m = s.match(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2}:\d{2})(?:\s*([+-]\d{4}))?$/);
+    if (m) {
+        let iso = m[1] + 'T' + m[2];
+        if (m[3]) {
+            const tz = m[3];
+            const tzIso = tz.slice(0, 3) + ':' + tz.slice(3);
+            iso += tzIso;
+        } else {
+            iso += 'Z';
+        }
+        t = Date.parse(iso);
+        return isNaN(t) ? NaN : t;
+    }
+
+    return NaN;
 }
 
 function test() {
