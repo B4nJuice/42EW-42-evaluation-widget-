@@ -23,7 +23,7 @@ function init() {
 }
 
 function enable() {
-	_indicator = new PanelMenu.Button(0.0, 'Bonjour', false);
+	_indicator = new PanelMenu.Button(0.0, 'no evaluation', false);
 
 	const box = new St.BoxLayout({
 		vertical: false,
@@ -34,7 +34,7 @@ function enable() {
 	});
 
 	_label = new St.Label({
-		text: 'Bonjour',
+		text: 'no evaluation',
 		style: 'font-weight: 600; color: #ffffff;',
 		x_align: Clutter.ActorAlign.CENTER,
 	});
@@ -51,18 +51,20 @@ function enable() {
 	_indicator.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 	_indicator.menu.addMenuItem(menuItem);
 
-	log("[42EW] widget chargé");
+	log("[42EW] widget loaded");
 	_validateAndLoginIfNeeded();
+	_updateLabelFromEvaluations();
 	setInterval(() => {
 		try
 		{
 			test();
+			_updateLabelFromEvaluations();
 		}
 		catch (e)
 		{
-			log(`42EW ${e}`);
+			log(`[42EW] ${e}`);
 		}
-	}, 5000);
+	}, 30000);
 }
 
 function _getCookieFilePath() {
@@ -129,19 +131,19 @@ function _checkCookieValidity(cookieValue, callback) {
 
 function _useCookie(cookieValue) {
     _intraCookie = cookieValue;
-    _label.set_text('Connecté');
+    _label.set_text('Connected');
     _label.set_style('color: #10b981; font-weight: 600;');
 }
 
 function _validateAndLoginIfNeeded() {
-    _label.set_text('Vérification cookie...');
+    _label.set_text('Checking cookie...');
     _label.set_style('color: #f59e0b; font-weight: 600;');
 
     const raw = _readCookieFile();
     if (!raw) {
         _executeCookieCapture();
         _checkCookieFileRepeatedly();
-		log("[42EW] error when getting raw t'as capté ou pas ??");
+		log("[42EW] error when getting raw");
         return;
     }
 
@@ -149,16 +151,16 @@ function _validateAndLoginIfNeeded() {
     if (!cookie) {
         _executeCookieCapture();
         _checkCookieFileRepeatedly();
-		log("[42EW] error when getting cookie t'as capté ou pas ??");
+		log("[42EW] error when getting cookie");
         return;
     }
 
     _checkCookieValidity(cookie, (valid) => {
         if (valid) {
-            log('[42EW] cookie valide détecté');
+            log('[42EW] valid cookie detected');
             _useCookie(cookie);
         } else {
-            log('[42EW] cookie invalide -> relancer capture');
+            log('[42EW] invalid cookie -> restarting capture');
             _executeCookieCapture();
             _checkCookieFileRepeatedly();
         }
@@ -203,6 +205,57 @@ function _checkCookieFileRepeatedly() {
         }
         return GLib.SOURCE_CONTINUE;
     });
+}
+
+function _updateLabelFromEvaluations() {
+    const evalPath = GLib.build_filenamev([Me.path, 'evaluations.json']);
+    try {
+        let [ok, contents] = GLib.file_get_contents(evalPath);
+        if (!ok || !contents) {
+            _label.set_text('no evaluation');
+            _label.set_style('color: #ffffff; font-weight: 600;');
+            return;
+        }
+        const str = imports.byteArray.toString(contents);
+        let arr = [];
+        try {
+            arr = JSON.parse(str);
+            if (!Array.isArray(arr)) arr = [];
+        } catch (e) {
+            arr = [];
+        }
+        if (arr.length === 0) {
+            _label.set_text('no evaluation');
+            _label.set_style('color: #ffffff; font-weight: 600;');
+            return;
+        }
+        let minEntry = null;
+        let minTime = Infinity;
+        for (let i = 0; i < arr.length; i++) {
+            const e = arr[i];
+            if (!e || !e.date) continue;
+            const t = Date.parse(e.date);
+            if (isNaN(t)) continue;
+            if (t < minTime) {
+                minTime = t;
+                minEntry = e;
+            }
+        }
+        if (!minEntry) {
+            _label.set_text('no evaluation');
+            _label.set_style('color: #ffffff; font-weight: 600;');
+            return;
+        }
+        const now = Date.now();
+        let diffMin = Math.round((minTime - now) / 60000);
+        if (diffMin < 0) diffMin = 0;
+        const user = minEntry.user || 'unknown';
+        _label.set_text(`evaluation with "${user}" in ${diffMin} min`);
+        _label.set_style('color: #10b981; font-weight: 600;');
+    } catch (e) {
+        _label.set_text('no evaluation');
+        _label.set_style('color: #ffffff; font-weight: 600;');
+    }
 }
 
 function test() {
