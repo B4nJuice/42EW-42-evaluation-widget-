@@ -248,10 +248,17 @@ function _updateLabelFromEvaluations() {
         }
         const now = Date.now();
         let diffMin = Math.round((minTime - now) / 60000);
-        if (diffMin < 0) diffMin = 0;
         const user = minEntry.user || 'unknown';
-        _label.set_text(`evaluation with "${user}" in ${diffMin} min`);
-        _label.set_style('color: #10b981; font-weight: 600;');
+		if (diffMin < 0)
+		{
+			_label.set_text(`evaluation with "${user}" ${diffMin} min ago !`);
+        	_label.set_style('color: #b91010ff; font-weight: 600;');
+		}
+		else
+		{
+			_label.set_text(`evaluation with "${user}" in ${diffMin} min`);
+			_label.set_style('color: #10b981; font-weight: 600;');
+		}
     } catch (e) {
         _label.set_text('no evaluation');
         _label.set_style('color: #ffffff; font-weight: 600;');
