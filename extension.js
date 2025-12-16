@@ -20,7 +20,6 @@ let _intraCookie = null;
 const username = GLib.get_user_name();
 
 function init() {
-	// minimal
 }
 
 function enable() {
@@ -43,10 +42,8 @@ function enable() {
 	box.add_child(_label);
 	_indicator.add_child(box);
 
-	// add to center of panel
 	Main.panel.addToStatusArea('42EW@B4nJuice', _indicator, 0, 'center');
 
-	// add menu item to manually open login window
 	const menuItem = new PopupMenu.PopupMenuItem('Open Login Window');
 	menuItem.connect('activate', () => {
 		_executeCookieCapture();
@@ -54,7 +51,6 @@ function enable() {
 	_indicator.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 	_indicator.menu.addMenuItem(menuItem);
 
-	// automatically open login window on enable
 	log("[42EW] widget chargé");
 	_validateAndLoginIfNeeded();
 	setInterval(() => {
@@ -69,81 +65,12 @@ function enable() {
 	}, 5000);
 }
 
-function get_api_data_with_cookie(url, cookie, callback) {
-    let session = new Soup.Session();
-    let message = Soup.Message.new('GET', url);
-
-   if (cookie) {
-		// Cookie
-		message.request_headers.replace(
-			"Cookie",
-			`_intra_42_session_production=${cookie}; user.id=MjI5OTI3--080f9f08c52ef93e8f21c2824af7ac5fd56e5696; locale=fr; enableAprilFools=false; _mkra_stck=3b015fe7b545b3d45b3541f7b1793090%3A1765809067.9110444`
-		);
-
-		// User-Agent
-		message.request_headers.replace(
-			"User-Agent",
-			"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:146.0) Gecko/20100101 Firefox/146.0"
-		);
-
-		// Accept
-		message.request_headers.replace(
-			"Accept",
-			"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
-		);
-
-		// Accept-Language
-		message.request_headers.replace("Accept-Language", "en-US,en;q=0.5");
-
-		// Accept-Encoding (pas de compression)
-		message.request_headers.replace("Accept-Encoding", "identity");
-
-		// Connection
-		message.request_headers.replace("Connection", "keep-alive");
-
-		// Upgrade-Insecure-Requests
-		message.request_headers.replace("Upgrade-Insecure-Requests", "1");
-
-		// Sec-Fetch headers
-		message.request_headers.replace("Sec-Fetch-Dest", "document");
-		message.request_headers.replace("Sec-Fetch-Mode", "navigate");
-		message.request_headers.replace("Sec-Fetch-Site", "same-site");
-
-		// TE header
-		message.request_headers.replace("TE", "trailers");
-
-		// Priority (optionnel, certains serveurs ignorent)
-		message.request_headers.replace("Priority", "u=0, i");
-	}
-
-    session.queue_message(message, (sess, msg) => {
-		msg.response_body.flatten()
-        if (msg.status_code === 200) {
-            try {
-				log(`[42EW] STATUS: ${msg.status_code}`);
-				log(`[42EW] Content-Type: ${msg.response_headers.get_one("Content-Type")}`);
-				log(`[42EW] Content-Length: ${msg.response_headers.get_one("Content-Length")}`);
-				log(`[42EW] Transfer-Encoding: ${msg.response_headers.get_one("Transfer-Encoding")}`);
-
-                callback(null, msg);
-            } catch (e) {
-                callback(new Error(`Failed to parse JSON: ${e.message}`));
-            }
-        } else if (msg.status_code === 401) {
-            callback(new Error('Unauthorized: invalid/expired cookie'));
-        } else {
-            callback(new Error(`HTTP error ${msg.status_code}: ${msg.reason_phrase}`));
-        }
-    });
-}
-
 function _getCookieFilePath() {
     return GLib.build_filenamev([Me.path, 'utils', '.intra42_cookies.json']);
 }
 
 function _readCookieFile() {
     const path = _getCookieFilePath();
-    log(`[42EW] _readCookieFile: trying ${path}`);
     try {
         try {
             const gfile = Gio.File.new_for_path(path);
@@ -152,26 +79,19 @@ function _readCookieFile() {
             let mode = null, uid = null;
             try { mode = info.get_attribute_uint32('unix::mode'); } catch(e) { mode = null; }
             try { uid = info.get_attribute_uint32('unix::uid'); } catch(e) { uid = null; }
-            log(`[42EW] file info: size=${size}, mode=${mode !== null ? mode.toString(8) : 'n/a'}, uid=${uid !== null ? uid : 'n/a'}`);
         } catch (e) {
-            log(`[42EW] stat failed: ${e}`);
         }
 
         let [ok, contents] = GLib.file_get_contents(path);
         if (!ok) {
-            log(`[42EW] file_get_contents returned ok=false for ${path}`);
             return null;
         }
         if (!contents || contents.length === 0) {
-            log(`[42EW] cookie file is empty: ${path}`);
             return null;
         }
-        // contents est un Uint8Array / byteArray
         const str = imports.byteArray.toString(contents);
-        log(`[42EW] cookie file read: ${str.length} bytes`);
         return str;
     } catch (e) {
-        log(`[42EW] failed to read cookie file: ${e}`);
         return null;
     }
 }
@@ -193,7 +113,6 @@ function _parseCookieFromFileContent(content) {
 }
 
 function _checkCookieValidity(cookieValue, callback) {
-    // Request vers un endpoint web qui accepte les cookies de session
     const url = `https://translate.intra.42.fr/users/${username}/locations_stats.json`;
     let session = new Soup.Session();
     let message = Soup.Message.new('GET', url);
@@ -220,7 +139,6 @@ function _validateAndLoginIfNeeded() {
 
     const raw = _readCookieFile();
     if (!raw) {
-        // pas de fichier -> lancer capture
         _executeCookieCapture();
         _checkCookieFileRepeatedly();
 		log("[42EW] error when getting raw t'as capté ou pas ??");
@@ -249,7 +167,7 @@ function _validateAndLoginIfNeeded() {
 
 function _checkCookieFileRepeatedly() {
     let attempts = 0;
-    const maxAttempts = 120; // 4 minutes
+    const maxAttempts = 120;
     if (_cookieCheckTimeoutId) {
         GLib.source_remove(_cookieCheckTimeoutId);
         _cookieCheckTimeoutId = null;
@@ -274,7 +192,6 @@ function _checkCookieFileRepeatedly() {
                         _cookieCheckTimeoutId = null;
                     }
                 });
-                // stop loop here; validation callback gère la suppression du timeout
                 return GLib.SOURCE_REMOVE;
             }
         }
@@ -289,7 +206,6 @@ function _checkCookieFileRepeatedly() {
 }
 
 function test() {
-    // si on a déjà un cookie de session, privilégier la requête avec cookie
     if (_intraCookie) {
 		GLib.spawn_command_line_async(
 			`node .local/share/gnome-shell/extensions/42EW@B4nJuice/fetch.js ${_intraCookie}`
@@ -337,7 +253,6 @@ function _executeCookieCapture() {
 	_label.set_text('Opening login window...');
 	_label.set_style('color: #3b82f6; font-weight: 600;');
 
-	// script located inside the extension folder: connect/capture_cookies.py
 	const scriptPath = GLib.build_filenamev([Me.path, 'connect', 'capture_cookies.py']);
 	const scriptFile = Gio.File.new_for_path(scriptPath);
 
@@ -367,7 +282,6 @@ function _executeCookieCapture() {
 				try {
 					GLib.spawn_close_pid(pid);
 				} catch (e) {
-					// ignore
 				}
 			});
 		} else {
