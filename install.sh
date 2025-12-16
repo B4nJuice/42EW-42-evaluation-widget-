@@ -12,7 +12,7 @@ echo  "${GREEN}========================================${NC}"
 echo ""
 
 EXTENSION_UUID="42EW@B4nJuice"
-REPO_URL="https://github.com/B4nJuice/42EW-42valuation-widget-.git"
+REPO_URL="https://github.com/B4nJuice/42EW-42-evaluation-widget-.git"
 INSTALL_DIR="$HOME/.local/share/gnome-shell/extensions/$EXTENSION_UUID"
 
 TMP_DIR="$(mktemp -d -t 42ew-install-XXXXXX)"
