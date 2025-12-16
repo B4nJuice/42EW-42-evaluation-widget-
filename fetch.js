@@ -25,6 +25,7 @@ let text = '';
 		text = await response.text();
 		const responsePath = path.join(__dirname, "response.html");
 		fs.writeFileSync(responsePath, text, "utf8");
+		//text = fs.readFileSync("./message.html");
 		const parsedHTML = HTMLParser.parse(text);
 		const items = parsedHTML.querySelectorAll(
 			"#collapseEvaluations .project-item"
